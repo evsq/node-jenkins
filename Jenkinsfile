@@ -52,8 +52,8 @@ pipeline {
         stage('Deploy Image'){
           steps {          
             container('helm'){
-                sh "helm lint ./${HELM_CHART_DIRECTORY}"
-                sh "helm upgrade --install --set image.tag=${BUILD_NUMBER} ${HELM_APP_NAME} ./helm/${HELM_CHART_DIRECTORY}"
+                sh "helm lint helm/${HELM_CHART_DIRECTORY}"
+                sh "helm upgrade --install --set image.tag=${BUILD_NUMBER} ${HELM_APP_NAME} helm/${HELM_CHART_DIRECTORY}"
             }
           }  
         } 
