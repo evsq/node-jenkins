@@ -42,7 +42,6 @@ podTemplate(label: 'mypod', serviceAccount: 'jenkins-agent', containers: [
         def HELM_APP_NAME = "node-test"
         def HELM_CHART_DIRECTORY = "node-test"
 
-      stages {
         stage('Test'){
             container('docker'){
                 sh 'ls -l'
@@ -77,7 +76,6 @@ podTemplate(label: 'mypod', serviceAccount: 'jenkins-agent', containers: [
                 sh "helm lint ./${HELM_CHART_DIRECTORY}"
                 sh "helm upgrade --install --set image.tag=${BUILD_NUMBER} ${HELM_APP_NAME} ./${HELM_CHART_DIRECTORY}"
             }
-        } 
-      }     
+        }    
     }
 }
