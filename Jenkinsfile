@@ -42,40 +42,52 @@ podTemplate(label: 'mypod', serviceAccount: 'jenkins-agent', containers: [
         def HELM_APP_NAME = "node-test"
         def HELM_CHART_DIRECTORY = "node-test"
 
-        stage('Test'){
+      stages {
+        stage('Test') {
+          steps {
             container('docker'){
                 sh 'ls -l'
-              }  
+              }
+          }  
         }
 
-        stage('Build Image'){
+        stage('Build Image') {
+          steps {
             container('docker'){
               withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 sh 'docker login --username="${USERNAME}" --password="${PASSWORD}"'
                 sh "docker build -t ${REPOSITORY_URI}:${BUILD_NUMBER} ."
               }  
             }
+          }  
         } 
 
         stage('Testing') {
+          steps {
             container('docker') { 
               sh "docker run ${REPOSITORY_URI}:${BUILD_NUMBER} npm run test "                 
             }
+          }
         }
 
-        stage('Push Image'){
+        stage('Push Image') {
+          steps {
             container('docker'){
               withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 sh "docker push ${REPOSITORY_URI}:${BUILD_NUMBER}"
               }                 
             }
+          }
         }
 
         stage('Deploy Image'){
+          steps {          
             container('helm'){
                 sh "helm lint ./${HELM_CHART_DIRECTORY}"
                 sh "helm upgrade --install --set image.tag=${BUILD_NUMBER} ${HELM_APP_NAME} ./${HELM_CHART_DIRECTORY}"
             }
-        }    
+          }  
+        } 
+      }     
     }
 }
