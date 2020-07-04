@@ -42,6 +42,14 @@ podTemplate(label: 'mypod', serviceAccount: 'jenkins-agent', containers: [
         def HELM_APP_NAME = "node-test"
         def HELM_CHART_DIRECTORY = "node-test"
 
+
+        stage('Test'){
+            container('docker'){
+                sh 'ls -l'
+              }  
+            }
+        }
+
         stage('Build Image'){
             container('docker'){
               withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
