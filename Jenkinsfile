@@ -1,46 +1,15 @@
-podTemplate(label: 'mypod', serviceAccount: 'jenkins-agent', containers: [ 
-    containerTemplate(
-      name: 'docker', 
-      image: 'docker', 
-      command: 'cat', 
-      resourceRequestCpu: '100m',
-      resourceLimitCpu: '300m',
-      resourceRequestMemory: '300Mi',
-      resourceLimitMemory: '500Mi',
-      ttyEnabled: true
-    ),
-    containerTemplate(
-      name: 'kubectl', 
-      image: 'amaceog/kubectl',
-      resourceRequestCpu: '100m',
-      resourceLimitCpu: '300m',
-      resourceRequestMemory: '300Mi',
-      resourceLimitMemory: '500Mi', 
-      ttyEnabled: true, 
-      command: 'cat'
-    ),
-    containerTemplate(
-      name: 'helm', 
-      image: 'alpine/helm:2.14.0', 
-      resourceRequestCpu: '100m',
-      resourceLimitCpu: '300m',
-      resourceRequestMemory: '300Mi',
-      resourceLimitMemory: '500Mi',
-      ttyEnabled: true, 
-      command: 'cat'
-    )
-  ],
-
-  volumes: [
-    hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
-    hostPathVolume(mountPath: '/usr/local/bin/helm', hostPath: '/usr/local/bin/helm')
-  ]
-  ) {
-    node('mypod') {
-
-        def REPOSITORY_URI = "evsq/node-test"
-        def HELM_APP_NAME = "node-test"
-        def HELM_CHART_DIRECTORY = "node-test"
+pipeline {
+    environment {
+      REPOSITORY_URI = "evsq/node-test"
+      HELM_APP_NAME = "node-test"
+      HELM_CHART_DIRECTORY = "node-test"
+    }
+    agent {
+        kubernetes {
+            defaultContainer 'jnlp'
+            yamlFile 'build.yaml'
+        }
+    }
 
       stages {
         stage('Test') {
